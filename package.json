@@ -1,0 +1,29 @@
+{
+  "name": "npm-db-migrate",
+  "version": "0.0.0",
+  "description": "Data migration tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexei-lexx/npm-db-migrate.git"
+  },
+  "keywords": [
+    "migration",
+    "migrate",
+    "data",
+    "abstract"
+  ],
+  "author": "Alexei L <alexei.lexx@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexei-lexx/npm-db-migrate/issues"
+  },
+  "homepage": "https://github.com/alexei-lexx/npm-db-migrate#readme",
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^2.3.4"
+  }
+}
