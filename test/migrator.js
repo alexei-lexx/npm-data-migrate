@@ -221,7 +221,10 @@ describe('Migrator', function() {
       beforeEach(function(done) {
         var migrations = [
           { up: function() { flag = 'A'; }, down: function() { flag = null; } },
-          { up: function() { flag = 'B'; }, down: function() { throw new Error(); } },
+          {
+            up: function() { flag = 'B'; },
+            down: function() { throw new Error(); },
+          },
         ];
 
         migrator = new Migrator(migrations);

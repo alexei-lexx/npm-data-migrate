@@ -1,0 +1,5 @@
+{
+  "preset": "node-style-guide",
+  "requireEarlyReturn":  false,
+  "verbose": true
+}
