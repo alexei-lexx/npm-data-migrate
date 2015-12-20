@@ -139,7 +139,7 @@ describe('Migrator', function() {
     });
   });
 
-  describe('rollback', function() {
+  describe('#rollback', function() {
     it('returns a promise', function() {
       migrator = new Migrator([]);
       var result = migrator.rollback();
