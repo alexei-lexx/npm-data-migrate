@@ -21,9 +21,9 @@ describe('Migrator', function() {
       it('is fulfilled', function(done) {
         migrator.migrate()
         .then(function() {
-          expect(true).to.be(true);
+          expect().not.fail();
         }, function(err) {
-          expect(true).to.be(false);
+          expect().fail();
         })
         .then(done, done);
       });
@@ -47,9 +47,9 @@ describe('Migrator', function() {
       it('is fulfilled', function(done) {
         migrator.migrate()
         .then(function() {
-          expect(true).to.be(true);
+          expect().not.fail();
         }, function(err) {
-          expect(true).to.be(false);
+          expect().fail();
         })
         .then(done, done);
       });
@@ -81,9 +81,9 @@ describe('Migrator', function() {
         it('is fulfilled', function(done) {
           migrator.migrate()
           .then(function() {
-            expect(true).to.be(true);
+            expect().not.fail();
           }, function(err) {
-            expect(true).to.be(false);
+            expect().fail();
           })
           .then(done, done);
         });
@@ -126,9 +126,9 @@ describe('Migrator', function() {
       it('is rejected', function(done) {
         migrator.migrate()
         .then(function() {
-          expect(true).to.be(false);
+          expect().fail();
         }, function(err) {
-          expect(true).to.be(true);
+          expect().not.fail();
         })
         .then(done, done);
       });
@@ -136,7 +136,7 @@ describe('Migrator', function() {
       it('doesn\'t go over the failed migration', function(done) {
         migrator.migrate()
         .then(function() {
-          expect(true).to.be(false);
+          expect().fail();
         }, function(err) {
           expect(flag).to.be('B');
         })
@@ -146,7 +146,7 @@ describe('Migrator', function() {
       it('sets the position of the last successful migration', function(done) {
         migrator.migrate()
         .then(function() {
-          expect(true).to.be(false);
+          expect().fail();
         }, function(err) {
           expect(migrator.position).to.be(1);
         })
@@ -174,9 +174,9 @@ describe('Migrator', function() {
       it('is fulfilled', function(done) {
         migrator.rollback()
         .then(function() {
-          expect(true).to.be(true);
+          expect().not.fail();
         }, function(err) {
-          expect(true).to.be(false);
+          expect().fail();
         })
         .then(done, done);
       });
@@ -190,7 +190,7 @@ describe('Migrator', function() {
       it('is rejected', function(done) {
         migrator.rollback()
         .then(function() {
-          expect(true).to.be(false);
+          expect().fail();
         }, function(err) {
           expect(err.message).to.be('No migrations to rollback');
         })
@@ -215,7 +215,7 @@ describe('Migrator', function() {
         it('is rejected', function(done) {
           migrator.rollback()
           .then(function() {
-            expect(true).to.be(false);
+            expect().fail();
           }, function(err) {
             expect(err.message).to.be('No migrations to rollback');
           })
@@ -268,9 +268,9 @@ describe('Migrator', function() {
       it('is rejected', function(done) {
         migrator.rollback()
         .then(function() {
-          expect(true).to.be(false);
+          expect().fail();
         }, function(err) {
-          expect(true).to.be(true);
+          expect().not.fail();
         })
         .then(done, done);
       });
@@ -278,7 +278,7 @@ describe('Migrator', function() {
       it('doesn\'t revert the changes of all migrations', function(done) {
         migrator.rollback()
         .then(function() {
-          expect(true).to.be(false);
+          expect().fail();
         }, function(err) {
           expect(flag).to.be('B');
         })
@@ -290,7 +290,7 @@ describe('Migrator', function() {
 
         migrator.rollback()
         .then(function() {
-          expect(true).to.be(false);
+          expect().fail();
         }, function(err) {
           expect(migrator.position).to.be(1);
         })

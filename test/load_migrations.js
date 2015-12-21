@@ -13,7 +13,7 @@ describe('LoadMigrations', function() {
     it('is rejected', function(done) {
       loadMigrations('./wrong-dir')
       .then(function() {
-        expect(true).to.be(false);
+        expect().fail();
       }, function(err) {
         expect(err.code).to.be('ENOENT')
       })
@@ -28,9 +28,9 @@ describe('LoadMigrations', function() {
       it('is fulfilled', function(done) {
         loadMigrations(dir)
         .then(function() {
-          expect(true).to.be(true);
+          expect().not.fail();
         }, function(err) {
-          expect(true).to.be(false);
+          expect().fail();
         })
         .then(done, done);
       });
@@ -40,9 +40,9 @@ describe('LoadMigrations', function() {
       it('is fulfilled', function(done) {
         loadMigrations(dir)
         .then(function() {
-          expect(true).to.be(true);
+          expect().not.fail();
         }, function(err) {
-          expect(true).to.be(false);
+          expect().fail();
         })
         .then(done, done);
       });
