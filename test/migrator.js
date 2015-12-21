@@ -13,6 +13,22 @@ describe('Migrator', function() {
       expect(typeof result.then).to.be('function');
     });
 
+    context('when a migration hasn\'t the #up method', function() {
+      beforeEach(function() {
+        migrator = new Migrator([ {} ]);
+      });
+
+      it('is fulfilled', function(done) {
+        migrator.migrate()
+        .then(function() {
+          expect(true).to.be(true);
+        }, function(err) {
+          expect(true).to.be(false);
+        })
+        .then(done, done);
+      });
+    });
+
     context('when successful migrations are given', function() {
       var counter;
 
@@ -146,6 +162,24 @@ describe('Migrator', function() {
 
       expect(result).to.be.ok();
       expect(typeof result.then).to.be('function');
+    });
+
+    context('when a migration hasn\'t the #down method', function() {
+      beforeEach(function(done) {
+        migrator = new Migrator([ {} ]);
+        migrator.migrate()
+        .then(done, done);
+      });
+
+      it('is fulfilled', function(done) {
+        migrator.rollback()
+        .then(function() {
+          expect(true).to.be(true);
+        }, function(err) {
+          expect(true).to.be(false);
+        })
+        .then(done, done);
+      });
     });
 
     context('when no migrations are given', function() {
