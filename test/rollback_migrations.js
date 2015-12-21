@@ -16,7 +16,8 @@ describe('RollbackMigrations', function() {
       rollbackMigrations(migrations)
       .then(function() {
         expect().not.fail();
-      }, function(err) {
+      })
+      .catch(function(err) {
         expect().fail();
       })
       .then(done, done);
@@ -30,7 +31,8 @@ describe('RollbackMigrations', function() {
       rollbackMigrations(migrations)
       .then(function() {
         expect().fail();
-      }, function(err) {
+      })
+      .catch(function(err) {
         expect(err.message).to.be('No migrations to rollback');
       })
       .then(done, done);
@@ -76,7 +78,8 @@ describe('RollbackMigrations', function() {
       rollbackMigrations(migrations)
       .then(function() {
         expect().fail();
-      }, function(err) {
+      })
+      .catch(function(err) {
         expect().not.fail();
       })
       .then(done, done);
@@ -86,7 +89,8 @@ describe('RollbackMigrations', function() {
       rollbackMigrations(migrations)
       .then(function() {
         expect().fail();
-      }, function(err) {
+      })
+      .catch(function(err) {
         expect(flag).to.be('B');
       })
       .then(done, done);

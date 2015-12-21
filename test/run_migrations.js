@@ -16,7 +16,8 @@ describe('RunMigrations', function() {
       runMigrations(migrations)
       .then(function() {
         expect().not.fail();
-      }, function(err) {
+      })
+      .catch(function(err) {
         expect().fail();
       })
       .then(done, done);
@@ -40,7 +41,8 @@ describe('RunMigrations', function() {
       runMigrations(migrations)
       .then(function() {
         expect().not.fail();
-      }, function(err) {
+      })
+      .catch(function(err) {
         expect().fail();
       })
       .then(done, done);
@@ -72,7 +74,8 @@ describe('RunMigrations', function() {
       runMigrations(migrations)
       .then(function() {
         expect().fail();
-      }, function(err) {
+      })
+      .catch(function(err) {
         expect().not.fail();
       })
       .then(done, done);
@@ -82,7 +85,8 @@ describe('RunMigrations', function() {
       runMigrations(migrations)
       .then(function() {
         expect().fail();
-      }, function(err) {
+      })
+      .catch(function(err) {
         expect(flag).to.be('B');
       })
       .then(done, done);

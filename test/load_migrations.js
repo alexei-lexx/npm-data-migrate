@@ -14,7 +14,8 @@ describe('LoadMigrations', function() {
       loadMigrations('./wrong-dir')
       .then(function() {
         expect().fail();
-      }, function(err) {
+      })
+      .catch(function(err) {
         expect(err.code).to.be('ENOENT')
       })
       .then(done, done);
@@ -29,7 +30,8 @@ describe('LoadMigrations', function() {
         loadMigrations(dir)
         .then(function() {
           expect().not.fail();
-        }, function(err) {
+        })
+        .catch(function(err) {
           expect().fail();
         })
         .then(done, done);
@@ -41,7 +43,8 @@ describe('LoadMigrations', function() {
         loadMigrations(dir)
         .then(function() {
           expect().not.fail();
-        }, function(err) {
+        })
+        .catch(function(err) {
           expect().fail();
         })
         .then(done, done);
