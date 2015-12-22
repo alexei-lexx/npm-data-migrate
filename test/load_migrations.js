@@ -63,7 +63,7 @@ describe('LoadMigrations', function() {
       loadMigrations(dir)
       .then(function(migrations) {
         migrations.forEach(function(migration) {
-          expect(migration.number).to.be.ok();
+          expect(migration.version).to.be.ok();
         });
       })
       .then(done, done);
@@ -72,9 +72,9 @@ describe('LoadMigrations', function() {
     it('sorts the result by date', function(done) {
       loadMigrations(dir)
       .then(function(migrations) {
-        expect(migrations[0].number).to.be('20150101000000');
-        expect(migrations[1].number).to.be('20150102000000');
-        expect(migrations[2].number).to.be('20150201000000');
+        expect(migrations[0].version).to.be('20150101000000');
+        expect(migrations[1].version).to.be('20150102000000');
+        expect(migrations[2].version).to.be('20150201000000');
       })
       .then(done, done);
     });
