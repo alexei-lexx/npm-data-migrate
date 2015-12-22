@@ -24,7 +24,7 @@ shared.scenario('any subcommand', function(subcommand) {
     });
 
     context('when an existent directory is given', function() {
-      var args = [ 'node', 'script', subcommand, '-d', './test/example' ];
+      var args = [ 'node', 'script', subcommand, '-d', './test/example/migrations' ];
 
       it('is fulfilled', function(done) {
         command.run(args)

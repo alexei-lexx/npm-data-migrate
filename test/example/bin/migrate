@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Command = require('../lib/command');
+var Command = require('../../../lib/command');
 
 command = new Command();
 command.run(process.argv)

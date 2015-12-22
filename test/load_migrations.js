@@ -23,7 +23,7 @@ describe('LoadMigrations', function() {
   });
 
   context('when an existent dir is given', function() {
-    var dir = process.cwd() + '/test/example';
+    var dir = process.cwd() + '/test/example/migrations';
 
     context('and the dir ends with /', function(done) {
       it('is fulfilled', function(done) {
