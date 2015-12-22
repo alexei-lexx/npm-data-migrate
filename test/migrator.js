@@ -1,12 +1,11 @@
 var expect = require('expect.js');
+var factory = require('./factory');
 var Migrator = require('../lib/migrator');
 
 describe('Migrator', function() {
-  var migrator;
-
   describe('#migrate', function() {
     it('returns a promise', function() {
-      migrator = new Migrator([]);
+      var migrator = new Migrator([]);
       var result = migrator.migrate();
 
       expect(result).to.be.ok();
@@ -14,8 +13,10 @@ describe('Migrator', function() {
     });
 
     context('when a migration hasn\'t the #up method', function() {
+      var migrator;
+
       beforeEach(function() {
-        migrator = new Migrator([ {} ]);
+        migrator = new Migrator([ factory.build('migration without #up') ]);
       });
 
       it('is fulfilled', function(done) {
@@ -31,50 +32,69 @@ describe('Migrator', function() {
     });
 
     context('when successful migrations are given', function() {
-      var counter, migrations
+      var counter, migrations;
 
       beforeEach(function() {
+        var up = function() { counter++; };
+
+        migrations = factory.buildList('migration', 3, { up: up });
         counter = 0;
-
-        migrations = [
-          { up: function() { counter++; } },
-          { up: function() { counter++; } },
-          { up: function() { counter++; } },
-        ];
-
-        migrator = new Migrator(migrations);
       });
 
-      it('is fulfilled', function(done) {
-        migrator.migrate()
-        .then(function() {
-          expect().not.fail();
-        })
-        .catch(function(err) {
-          expect().fail();
-        })
-        .then(done, done);
+      context('when the current version is not given', function() {
+        var migrator;
+
+        beforeEach(function() {
+          migrator = new Migrator(migrations);
+        });
+
+        it('is fulfilled', function(done) {
+          migrator.migrate()
+          .then(function() {
+            expect().not.fail();
+          })
+          .catch(function(err) {
+            expect().fail();
+          })
+          .then(done, done);
+        });
+
+        it('goes through all migrations', function(done) {
+          migrator.migrate()
+          .then(function() {
+            expect(counter).to.be(3);
+          })
+          .then(done, done);
+        });
       });
 
-      it('goes through all migrations', function(done) {
-        migrator.migrate()
-        .then(function() {
-          expect(counter).to.be(3);
-        })
-        .then(done, done);
+      context('when the current version is given', function() {
+        var migrator;
+
+        beforeEach(function() {
+          var curVersion = migrations[0].version;
+          migrator = new Migrator(migrations, curVersion);
+        });
+
+        it('goes through pending migrations only', function(done) {
+          migrator.migrate()
+          .then(function() {
+            expect(counter).to.be(2);
+          })
+          .then(done, done);
+        });
       });
     });
 
     context('when one migration in the middle fails', function() {
-      var flag, migrations;
+      var flag, migrations, migrator;
 
       beforeEach(function() {
         migrations = [
-          { up: function() { flag = 'A'; } },
-          { up: function() { flag = 'B'; } },
-          { up: function() { throw new Error(); } },
-          { up: function() { flag = 'C'; } },
-          { up: function() { flag = 'D'; } },
+          factory.build('migration', { up: function() { flag = 'A'; } }),
+          factory.build('migration', { up: function() { flag = 'B'; } }),
+          factory.build('migration with failed #up'),
+          factory.build('migration', { up: function() { flag = 'C'; } }),
         ];
 
         migrator = new Migrator(migrations);
@@ -114,8 +134,10 @@ describe('Migrator', function() {
     });
 
     context('when a migration hasn\'t the #down method', function() {
+      var migrator;
+
       beforeEach(function() {
-        migrator = new Migrator([ {} ]);
+        migrator = new Migrator([ factory.build('migration without #down') ]);
       });
 
       it('is fulfilled', function(done) {
@@ -131,6 +153,8 @@ describe('Migrator', function() {
     });
 
     context('when no migrations are given', function() {
+      var migrator;
+
       beforeEach(function() {
         migrator = new Migrator([]);
       });
@@ -148,39 +172,74 @@ describe('Migrator', function() {
     });
 
     context('when successful migrations are given', function() {
-      var flag, migrations;
+      var flag, migrations, migrator;
 
       beforeEach(function() {
         migrations = [
-          { up: function() { flag = 'A'; }, down: function() { flag = null; } },
-          { up: function() { flag = 'B'; }, down: function() { flag = 'A'; } },
-          { up: function() { flag = 'C'; }, down: function() { flag = 'B'; } },
+          factory.build('migration', { down: function() { flag = null; } }),
+          factory.build('migration', { down: function() { flag = 'A'; } }),
+          factory.build('migration', { down: function() { flag = 'B'; } }),
         ];
-
-        migrator = new Migrator(migrations);
       });
 
-      it('reverts the result of the last one', function(done) {
-        migrator.rollback()
-        .then(function() {
-          expect(flag).to.be('B');
-        })
-        .then(done, done);
+      context('when the current version is not given', function() {
+        beforeEach(function() {
+          migrator = new Migrator(migrations);
+        });
+
+        it('reverts the result of the last one', function(done) {
+          migrator.rollback()
+          .then(function() {
+            expect(flag).to.be('B');
+          })
+          .then(done, done);
+        });
+      });
+
+      context('when the current version is given', function() {
+        beforeEach(function() {
+          var curVersion = migrations[1].version;
+          migrator = new Migrator(migrations, curVersion);
+        });
+
+        it('reverts the current migration', function(done) {
+          migrator.rollback()
+          .then(function() {
+            expect(flag).to.be('A');
+          })
+          .then(done, done);
+        });
+      });
+
+      context('when the current version is wrong', function() {
+        beforeEach(function() {
+          var wrongCurVersion = 1111;
+          migrator = new Migrator(migrations, wrongCurVersion);
+        });
+
+        it('is rejected', function(done) {
+          migrator.rollback()
+          .then(function() {
+            expect().fail();
+          })
+          .catch(function(err) {
+            expect().not.fail();
+          })
+          .then(done, done);
+        });
       });
     });
 
     context('when the last migration fails on rollback', function() {
-      var flag, migrations;
+      var flag, migrations, migrator;
 
       beforeEach(function() {
         flag = 'B';
 
         migrations = [
-          { up: function() { flag = 'A'; }, down: function() { flag = null; } },
-          {
-            up: function() { flag = 'B'; },
-            down: function() { throw new Error(); },
-          },
+          factory.build('migration'),
+          factory.build('migration', { down: function() { flag = 'A'; } }),
+          factory.build('migration with failed #down'),
         ];
 
         migrator = new Migrator(migrations);

@@ -27,7 +27,8 @@
     "expect.js": "^0.3.1",
     "jscs": "^2.7.0",
     "mocha": "^2.3.4",
-    "mocha-shared": "^0.2.0"
+    "mocha-shared": "^0.2.0",
+    "rosie": "^1.2.0"
   },
   "dependencies": {
     "commander": "^2.9.0",
