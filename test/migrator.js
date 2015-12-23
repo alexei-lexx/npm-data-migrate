@@ -1,6 +1,7 @@
 var expect = require('expect.js');
 var factory = require('./factory');
 var Migrator = require('../lib/migrator');
+var VersionBackend = require('../lib/version_backend');
 
 describe('Migrator', function() {
   describe('#migrate', function() {
@@ -118,6 +119,34 @@ describe('Migrator', function() {
         })
         .catch(function(err) {
           expect(flag).to.be('B');
+        })
+        .then(done, done);
+      });
+    });
+
+    context('when the backend is given', function() {
+      var versionBackend = new VersionBackend();
+
+      beforeEach(function() {
+        var migrations = [
+          factory.build('migration'),
+          factory.build('migration'),
+          factory.build('migration with failed #up'),
+        ];
+
+        migrator = new Migrator(migrations, 0, versionBackend);
+      });
+
+      it('saves all successful versions to the backend', function(done) {
+        migrator.migrate()
+        .then(function() {
+          expect().fail();
+        })
+        .catch(function() {
+          return versionBackend.getMigrated();
+        })
+        .then(function(migrated) {
+          expect(migrated).to.have.length(2);
         })
         .then(done, done);
       });
