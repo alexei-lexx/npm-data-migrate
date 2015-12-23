@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
-var Command = require('../../../lib/command');
+var Cli = require('../../../lib/cli');
 
-command = new Command();
-command.run(process.argv)
+Cli.exec(process.argv)
 .then(function() {
   console.info('Completed');
 })

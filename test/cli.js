@@ -1,18 +1,12 @@
 var expect = require('expect.js');
 var shared = require('mocha-shared');
-var Command = require('../lib/command');
+var Cli = require('../lib/cli');
 require('./shared/subcommand');
 
-describe('Command', function() {
-  var command;
-
-  beforeEach(function() {
-    command = new Command();
-  });
-
-  describe('#run', function() {
+describe('Cli', function() {
+  describe('.exec', function() {
     it('returns a promise', function() {
-      var result = command.run([]);
+      var result = Cli.exec([]);
 
       expect(result).to.be.ok();
       expect(typeof result.then).to.be('function');

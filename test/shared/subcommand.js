@@ -1,18 +1,14 @@
 var expect = require('expect.js');
 var shared = require('mocha-shared');
-var Command = require('../../lib/command');
+var Cli = require('../../lib/cli');
 
 shared.scenario('any subcommand', function(subcommand) {
-  beforeEach(function() {
-    command = new Command();
-  });
-
   describe('--dir', function() {
     context('when a wrong directory is given', function() {
       var args = [ 'node', 'script', subcommand, '-d', './wrong_dir' ];
 
       it('is rejected', function(done) {
-        command.run(args)
+        Cli.exec(args)
         .then(function() {
           expect().fail();
         })
@@ -27,7 +23,7 @@ shared.scenario('any subcommand', function(subcommand) {
       var args = [ 'node', 'script', subcommand, '-d', './test/example/migrations' ];
 
       it('is fulfilled', function(done) {
-        command.run(args)
+        Cli.exec(args)
         .then(function() {
           expect().not.fail();
         })
@@ -54,7 +50,7 @@ shared.scenario('any subcommand', function(subcommand) {
       var args = [ 'node', 'script', subcommand, '-e', 'staging' ];
 
       it('sets the NODE_ENV', function(done) {
-        command.run(args)
+        Cli.exec(args)
         .then(function() {
           expect().fail();
         })
@@ -69,7 +65,7 @@ shared.scenario('any subcommand', function(subcommand) {
       var args = [ 'node', 'script', subcommand ];
 
       it('sets the NODE_ENV to development by default', function(done) {
-        command.run(args)
+        Cli.exec(args)
         .then(function() {
           expect().fail();
         })
