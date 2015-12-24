@@ -78,6 +78,31 @@ describe('MigrationsSet', function() {
           .then(done, done);
         });
       });
+
+      context('when the version backend is given', function() {
+        var migrationsSet;
+
+        beforeEach(function() {
+          migrationsSet = new MigrationsSet(migrations);
+        });
+
+        it('saves the last version as current', function(done) {
+          var versionBackend = new VersionBackend();
+
+          migrationsSet.migrate(versionBackend)
+          .catch(function() {
+            expect().fail();
+          })
+          .then(function() {
+            return versionBackend.getCurrent();
+          })
+          .then(function(savedVersion) {
+            var lastVersion = migrations[2].version;
+            expect(savedVersion).to.be(lastVersion);
+          })
+          .then(done, done);
+        });
+      });
     });
 
     context('when one migration in the middle fails', function() {
@@ -114,6 +139,25 @@ describe('MigrationsSet', function() {
           expect(flag).to.be('B');
         })
         .then(done, done);
+      });
+
+      context('when the version backend is given', function() {
+        it('saves the last resolved version as current', function(done) {
+          var versionBackend = new VersionBackend();
+
+          migrationsSet.migrate(versionBackend)
+          .then(function() {
+            expect().fail();
+          })
+          .catch(function() {
+            return versionBackend.getCurrent();
+          })
+          .then(function(savedVersion) {
+            var lastVersion = migrations[1].version;
+            expect(savedVersion).to.be(lastVersion);
+          })
+          .then(done, done);
+        });
       });
     });
   });
