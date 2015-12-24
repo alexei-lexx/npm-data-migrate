@@ -4,6 +4,18 @@ var Migrator = require('../lib/migrator');
 var VersionBackend = require('../lib/version_backend');
 
 describe('Migrator', function() {
+  describe('#constructor', function() {
+    context('when the current version is wrong', function() {
+      var wrongCurVersion = 1111;
+
+      it('fails', function() {
+        expect(function() {
+          new Migrator(migrations, wrongCurVersion);
+        }).to.throwException('The version 1111 not found');
+      });
+    });
+  });
+
   describe('#migrate', function() {
     it('returns a promise', function() {
       var migrator = new Migrator([]);
@@ -11,25 +23,6 @@ describe('Migrator', function() {
 
       expect(result).to.be.ok();
       expect(typeof result.then).to.be('function');
-    });
-
-    context('when a migration hasn\'t the #up method', function() {
-      var migrator;
-
-      beforeEach(function() {
-        migrator = new Migrator([ factory.build('migration without #up') ]);
-      });
-
-      it('is fulfilled', function(done) {
-        migrator.migrate()
-        .then(function() {
-          expect().not.fail();
-        })
-        .catch(function(err) {
-          expect().fail();
-        })
-        .then(done, done);
-      });
     });
 
     context('when successful migrations are given', function() {
@@ -123,34 +116,6 @@ describe('Migrator', function() {
         .then(done, done);
       });
     });
-
-    context('when the backend is given', function() {
-      var versionBackend = new VersionBackend();
-
-      beforeEach(function() {
-        var migrations = [
-          factory.build('migration'),
-          factory.build('migration'),
-          factory.build('migration with failed #up'),
-        ];
-
-        migrator = new Migrator(migrations, 0, versionBackend);
-      });
-
-      it('saves all successful versions to the backend', function(done) {
-        migrator.migrate()
-        .then(function() {
-          expect().fail();
-        })
-        .catch(function() {
-          return versionBackend.getMigrated();
-        })
-        .then(function(migrated) {
-          expect(migrated).to.have.length(2);
-        })
-        .then(done, done);
-      });
-    });
   });
 
   describe('#rollback', function() {
@@ -160,25 +125,6 @@ describe('Migrator', function() {
 
       expect(result).to.be.ok();
       expect(typeof result.then).to.be('function');
-    });
-
-    context('when a migration hasn\'t the #down method', function() {
-      var migrator;
-
-      beforeEach(function() {
-        migrator = new Migrator([ factory.build('migration without #down') ]);
-      });
-
-      it('is fulfilled', function(done) {
-        migrator.rollback()
-        .then(function() {
-          expect().not.fail();
-        })
-        .catch(function(err) {
-          expect().fail();
-        })
-        .then(done, done);
-      });
     });
 
     context('when no migrations are given', function() {
@@ -216,10 +162,13 @@ describe('Migrator', function() {
           migrator = new Migrator(migrations);
         });
 
-        it('reverts the result of the last one', function(done) {
+        it('is rejected', function(done) {
           migrator.rollback()
           .then(function() {
-            expect(flag).to.be('B');
+            expect().fail();
+          })
+          .catch(function(err) {
+            expect(err.message).to.be('No migrations to rollback');
           })
           .then(done, done);
         });
@@ -239,27 +188,9 @@ describe('Migrator', function() {
           .then(done, done);
         });
       });
-
-      context('when the current version is wrong', function() {
-        beforeEach(function() {
-          var wrongCurVersion = 1111;
-          migrator = new Migrator(migrations, wrongCurVersion);
-        });
-
-        it('is rejected', function(done) {
-          migrator.rollback()
-          .then(function() {
-            expect().fail();
-          })
-          .catch(function(err) {
-            expect().not.fail();
-          })
-          .then(done, done);
-        });
-      });
     });
 
-    context('when the last migration fails on rollback', function() {
+    context('when the current migration fails on rollback', function() {
       var flag, migrations, migrator;
 
       beforeEach(function() {
@@ -271,7 +202,7 @@ describe('Migrator', function() {
           factory.build('migration with failed #down'),
         ];
 
-        migrator = new Migrator(migrations);
+        migrator = new Migrator(migrations, migrations[2].version);
       });
 
       it('is rejected', function(done) {
@@ -285,7 +216,7 @@ describe('Migrator', function() {
         .then(done, done);
       });
 
-      it('doesn\'t revert the changes of all migrations', function(done) {
+      it('doesn\'t revert anything', function(done) {
         migrator.rollback()
         .then(function() {
           expect().fail();
