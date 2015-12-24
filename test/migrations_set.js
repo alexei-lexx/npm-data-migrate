@@ -1,16 +1,16 @@
 var expect = require('expect.js');
 var factory = require('./factory');
-var Migrator = require('../lib/migrator');
+var MigrationsSet = require('../lib/migrations_set');
 var VersionBackend = require('../lib/version_backend');
 
-describe('Migrator', function() {
+describe('MigrationsSet', function() {
   describe('#constructor', function() {
     context('when the current version is wrong', function() {
       var wrongCurVersion = 1111;
 
       it('fails', function() {
         expect(function() {
-          new Migrator(migrations, wrongCurVersion);
+          new MigrationsSet(migrations, wrongCurVersion);
         }).to.throwException('The version 1111 not found');
       });
     });
@@ -18,8 +18,8 @@ describe('Migrator', function() {
 
   describe('#migrate', function() {
     it('returns a promise', function() {
-      var migrator = new Migrator([]);
-      var result = migrator.migrate();
+      var migrationsSet = new MigrationsSet([]);
+      var result = migrationsSet.migrate();
 
       expect(result).to.be.ok();
       expect(typeof result.then).to.be('function');
@@ -36,14 +36,14 @@ describe('Migrator', function() {
       });
 
       context('when the current version is not given', function() {
-        var migrator;
+        var migrationsSet;
 
         beforeEach(function() {
-          migrator = new Migrator(migrations);
+          migrationsSet = new MigrationsSet(migrations);
         });
 
         it('is fulfilled', function(done) {
-          migrator.migrate()
+          migrationsSet.migrate()
           .then(function() {
             expect().not.fail();
           })
@@ -54,7 +54,7 @@ describe('Migrator', function() {
         });
 
         it('goes through all migrations', function(done) {
-          migrator.migrate()
+          migrationsSet.migrate()
           .then(function() {
             expect(counter).to.be(3);
           })
@@ -63,15 +63,15 @@ describe('Migrator', function() {
       });
 
       context('when the current version is given', function() {
-        var migrator;
+        var migrationsSet;
 
         beforeEach(function() {
           var curVersion = migrations[0].version;
-          migrator = new Migrator(migrations, curVersion);
+          migrationsSet = new MigrationsSet(migrations, curVersion);
         });
 
         it('goes through pending migrations only', function(done) {
-          migrator.migrate()
+          migrationsSet.migrate()
           .then(function() {
             expect(counter).to.be(2);
           })
@@ -81,7 +81,7 @@ describe('Migrator', function() {
     });
 
     context('when one migration in the middle fails', function() {
-      var flag, migrations, migrator;
+      var flag, migrations, migrationsSet;
 
       beforeEach(function() {
         migrations = [
@@ -91,11 +91,11 @@ describe('Migrator', function() {
           factory.build('migration', { up: function() { flag = 'C'; } }),
         ];
 
-        migrator = new Migrator(migrations);
+        migrationsSet = new MigrationsSet(migrations);
       });
 
       it('is rejected', function(done) {
-        migrator.migrate()
+        migrationsSet.migrate()
         .then(function() {
           expect().fail();
         })
@@ -106,7 +106,7 @@ describe('Migrator', function() {
       });
 
       it('doesn\'t go over the failed migration', function(done) {
-        migrator.migrate()
+        migrationsSet.migrate()
         .then(function() {
           expect().fail();
         })
@@ -120,22 +120,22 @@ describe('Migrator', function() {
 
   describe('#rollback', function() {
     it('returns a promise', function() {
-      var migrator = new Migrator([]);
-      var result = migrator.rollback();
+      var migrationsSet = new MigrationsSet([]);
+      var result = migrationsSet.rollback();
 
       expect(result).to.be.ok();
       expect(typeof result.then).to.be('function');
     });
 
     context('when no migrations are given', function() {
-      var migrator;
+      var migrationsSet;
 
       beforeEach(function() {
-        migrator = new Migrator([]);
+        migrationsSet = new MigrationsSet([]);
       });
 
       it('is rejected', function(done) {
-        migrator.rollback()
+        migrationsSet.rollback()
         .then(function() {
           expect().fail();
         })
@@ -147,7 +147,7 @@ describe('Migrator', function() {
     });
 
     context('when successful migrations are given', function() {
-      var flag, migrations, migrator;
+      var flag, migrations, migrationsSet;
 
       beforeEach(function() {
         migrations = [
@@ -159,11 +159,11 @@ describe('Migrator', function() {
 
       context('when the current version is not given', function() {
         beforeEach(function() {
-          migrator = new Migrator(migrations);
+          migrationsSet = new MigrationsSet(migrations);
         });
 
         it('is rejected', function(done) {
-          migrator.rollback()
+          migrationsSet.rollback()
           .then(function() {
             expect().fail();
           })
@@ -177,11 +177,11 @@ describe('Migrator', function() {
       context('when the current version is given', function() {
         beforeEach(function() {
           var curVersion = migrations[1].version;
-          migrator = new Migrator(migrations, curVersion);
+          migrationsSet = new MigrationsSet(migrations, curVersion);
         });
 
         it('reverts the current migration', function(done) {
-          migrator.rollback()
+          migrationsSet.rollback()
           .then(function() {
             expect(flag).to.be('A');
           })
@@ -191,7 +191,7 @@ describe('Migrator', function() {
     });
 
     context('when the current migration fails on rollback', function() {
-      var flag, migrations, migrator;
+      var flag, migrations, migrationsSet;
 
       beforeEach(function() {
         flag = 'B';
@@ -202,11 +202,11 @@ describe('Migrator', function() {
           factory.build('migration with failed #down'),
         ];
 
-        migrator = new Migrator(migrations, migrations[2].version);
+        migrationsSet = new MigrationsSet(migrations, migrations[2].version);
       });
 
       it('is rejected', function(done) {
-        migrator.rollback()
+        migrationsSet.rollback()
         .then(function() {
           expect().fail();
         })
@@ -217,7 +217,7 @@ describe('Migrator', function() {
       });
 
       it('doesn\'t revert anything', function(done) {
-        migrator.rollback()
+        migrationsSet.rollback()
         .then(function() {
           expect().fail();
         })
