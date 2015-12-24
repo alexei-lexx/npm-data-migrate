@@ -4,7 +4,7 @@ var Cli = require('../lib/cli');
 require('./shared/subcommand');
 
 describe('Cli', function() {
-  xdescribe('.exec', function() {
+  describe('.exec', function() {
     it('returns a promise', function() {
       var result = Cli.exec([]);
 
