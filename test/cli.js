@@ -45,8 +45,8 @@ describe('Cli', function() {
 
       context('when an existent directory is given', function() {
         var args = [
-          'node', 'script', 'create', 'new_migration'
-                          , '-d', './test/example/tmp',
+          'node', 'script', 'create', 'new_migration',
+                            '-d', './test/example/tmp',
         ];
 
         it('is fulfilled', function(done) {

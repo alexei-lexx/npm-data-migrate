@@ -1,0 +1,6 @@
+{
+  "strict": "implied",
+  "node": true,
+  "mocha": true,
+  "eqeqeq": true
+}

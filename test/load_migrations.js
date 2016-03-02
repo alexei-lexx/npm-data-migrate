@@ -16,7 +16,7 @@ describe('LoadMigrations', function() {
         expect().fail();
       })
       .catch(function(err) {
-        expect(err.code).to.be('ENOENT')
+        expect(err.code).to.be('ENOENT');
       })
       .then(done, done);
     });

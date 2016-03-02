@@ -16,7 +16,7 @@ describe('MigrationsSet', function() {
 
       it('fails', function() {
         expect(function() {
-          new MigrationsSet(migrations, wrongCurVersion);
+          new MigrationsSet([], wrongCurVersion);
         }).to.throwException('The version 1111 not found');
       });
     });
