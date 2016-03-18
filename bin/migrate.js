@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Cli = require('../../../lib/cli');
+var Cli = require('../lib/cli');
 
 Cli.exec(process.argv)
 .then(function() {

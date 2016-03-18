@@ -7,6 +7,9 @@
     "test": "./node_modules/.bin/mocha",
     "jscs": "./node_modules/.bin/jscs ."
   },
+  "bin": {
+    "migrate": "./bin/migrate.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alexei-lexx/npm-data-migrate.git"
