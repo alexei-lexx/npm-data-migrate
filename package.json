@@ -1,5 +1,5 @@
 {
-  "name": "npm-db-migrate",
+  "name": "npm-data-migrate",
   "version": "0.0.0",
   "description": "Data migration tool",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alexei-lexx/npm-db-migrate.git"
+    "url": "git+https://github.com/alexei-lexx/npm-data-migrate.git"
   },
   "keywords": [
     "migration",
@@ -20,9 +20,9 @@
   "author": "Alexei L <alexei.lexx@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alexei-lexx/npm-db-migrate/issues"
+    "url": "https://github.com/alexei-lexx/npm-data-migrate/issues"
   },
-  "homepage": "https://github.com/alexei-lexx/npm-db-migrate#readme",
+  "homepage": "https://github.com/alexei-lexx/npm-data-migrate#readme",
   "devDependencies": {
     "expect.js": "^0.3.1",
     "jscs": "^2.7.0",

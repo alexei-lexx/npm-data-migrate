@@ -1,2 +1,2 @@
-# npm-db-migrate
+# npm-data-migrate
 Data migration tool for Node.js
