@@ -21,25 +21,40 @@ describe('Cli', function() {
       shared.scenario('any subcommand', 'rollback');
     });
 
-    describe('create', function() {
+    describe.only('create', function() {
       beforeEach(function() {
         fs.mkdirsSync(__dirname + '/example/tmp');
       });
 
-      context('when a wrong directory is given', function() {
-        var args = [
-          'node', 'script', 'create', 'new_migration', '-d', './wrong_dir',
-        ];
+      context('when a non-existent directory is given', function() {
+        var dir = './non_existent_dir';
+        var args = [ 'node', 'script', 'create', 'new_migration', '-d', dir ];
 
-        it('is rejected', function(done) {
+        it('creates this directory silently', function(done) {
           Cli.exec(args)
           .then(function() {
-            expect().fail();
+            var existent = fs.statSync(dir).isDirectory();
+            expect(existent).to.be.ok();
           })
           .catch(function(err) {
-            expect(err.message).contain('ENOENT, no such file or directory');
+            expect().fail();
           })
           .then(done, done);
+        });
+
+        it('is fulfilled', function(done) {
+          Cli.exec(args)
+          .then(function() {
+            expect().not.fail();
+          })
+          .catch(function() {
+            expect().fail();
+          })
+          .then(done, done);
+        });
+
+        afterEach(function() {
+          fs.removeSync(dir);
         });
       });
 
