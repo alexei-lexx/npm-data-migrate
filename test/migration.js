@@ -11,20 +11,16 @@ shared.scenario('migration method', function(methodName) {
       migration = new Migration({});
     });
 
-
     it('returns a promise', function() {
-      expect(typeof migration[methodName]().then).to.be('function');
+      expect(migration[methodName]()).to.be.a('promise');
     });
 
-    it('is resolved with no value', function(done) {
-      migration[methodName]()
-      .then(function(result) {
-        expect(typeof result).to.be('undefined');
-      })
-      .catch(function() {
-        expect().fail();
-      })
-      .then(done, done);
+    it('is resolved with no value', function() {
+      return expect(migration[methodName]()).to
+        .fulfill()
+        .then(function(result) {
+          expect(typeof result).to.be('undefined');
+        });
     });
   });
 
@@ -39,18 +35,15 @@ shared.scenario('migration method', function(methodName) {
     });
 
     it('returns a promise', function() {
-      expect(typeof migration[methodName]().then).to.be('function');
+      expect(migration[methodName]()).to.be.a('promise');
     });
 
-    it('is resolved with the same value', function(done) {
-      migration[methodName]()
-      .then(function(result) {
-        expect(result).to.be('A');
-      })
-      .catch(function() {
-        expect().fail();
-      })
-      .then(done, done);
+    it('is resolved with the same value', function() {
+      return expect(migration[methodName]()).to
+        .fulfill()
+        .then(function(result) {
+          expect(result).to.be('A');
+        });
     });
   });
 
@@ -65,18 +58,15 @@ shared.scenario('migration method', function(methodName) {
     });
 
     it('returns a promise', function() {
-      expect(typeof migration[methodName]().then).to.be('function');
+      expect(migration[methodName]()).to.be.a('promise');
     });
 
-    it('is rejected with the same reason', function(done) {
-      migration[methodName]()
-      .then(function() {
-        expect().fail();
-      })
-      .catch(function(reason) {
-        expect(reason).to.be('bad weather');
-      })
-      .then(done, done);
+    it('is rejected with the same reason', function() {
+      return expect(migration[methodName]()).to
+        .reject()
+        .then(function(reason) {
+          expect(reason).to.be('bad weather');
+        });
     });
   });
 
@@ -95,18 +85,15 @@ shared.scenario('migration method', function(methodName) {
     });
 
     it('returns a promise', function() {
-      expect(typeof migration[methodName]().then).to.be('function');
+      expect(migration[methodName]()).to.be.a('promise');
     });
 
-    it('is resolved with the same value', function(done) {
-      migration[methodName]()
-      .then(function(result) {
-        expect(result).to.be('B');
-      })
-      .catch(function() {
-        expect().fail();
-      })
-      .then(done, done);
+    it('is resolved with the same value', function() {
+      return expect(migration[methodName]()).to
+        .fulfill()
+        .then(function(result) {
+          expect(result).to.be('B');
+        });
     });
   });
 });

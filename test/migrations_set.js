@@ -25,10 +25,7 @@ describe('MigrationsSet', function() {
   describe('#migrate', function() {
     it('returns a promise', function() {
       migrationsSet = new MigrationsSet([]);
-      var result = migrationsSet.migrate();
-
-      expect(result).to.be.ok();
-      expect(typeof result.then).to.be('function');
+      expect(migrationsSet.migrate()).to.be.a('promise');
     });
 
     context('when successful migrations are given', function() {
@@ -46,23 +43,15 @@ describe('MigrationsSet', function() {
           migrationsSet = new MigrationsSet(migrations);
         });
 
-        it('is fulfilled', function(done) {
-          migrationsSet.migrate()
-          .then(function() {
-            expect().not.fail();
-          })
-          .catch(function(err) {
-            expect().fail();
-          })
-          .then(done, done);
+        it('is fulfilled', function() {
+          return expect(migrationsSet.migrate()).to.fulfill();
         });
 
-        it('goes through all migrations', function(done) {
-          migrationsSet.migrate()
-          .then(function() {
-            expect(counter).to.be(3);
-          })
-          .then(done, done);
+        it('goes through all migrations', function() {
+          return migrationsSet.migrate()
+            .then(function() {
+              expect(counter).to.be(3);
+            });
         });
       });
 
@@ -72,12 +61,11 @@ describe('MigrationsSet', function() {
           migrationsSet = new MigrationsSet(migrations, curVersion);
         });
 
-        it('goes through pending migrations only', function(done) {
-          migrationsSet.migrate()
-          .then(function() {
-            expect(counter).to.be(2);
-          })
-          .then(done, done);
+        it('goes through pending migrations only', function() {
+          return migrationsSet.migrate()
+            .then(function() {
+              expect(counter).to.be(2);
+            });
         });
       });
 
@@ -86,21 +74,17 @@ describe('MigrationsSet', function() {
           migrationsSet = new MigrationsSet(migrations);
         });
 
-        it('saves the last version as current', function(done) {
+        it('saves the last version as current', function() {
           var versionBackend = new VersionBackend();
 
-          migrationsSet.migrate(versionBackend)
-          .catch(function() {
-            expect().fail();
-          })
-          .then(function() {
-            return versionBackend.getCurrent();
-          })
-          .then(function(savedVersion) {
-            var lastVersion = migrations[2].version;
-            expect(savedVersion).to.be(lastVersion);
-          })
-          .then(done, done);
+          return migrationsSet.migrate(versionBackend)
+            .then(function() {
+              return versionBackend.getCurrent();
+            })
+            .then(function(currentVersion) {
+              var expectedVersion = migrations[2].version;
+              expect(currentVersion).to.be(expectedVersion);
+            });
         });
       });
     });
@@ -119,44 +103,29 @@ describe('MigrationsSet', function() {
         migrationsSet = new MigrationsSet(migrations);
       });
 
-      it('is rejected', function(done) {
-        migrationsSet.migrate()
-        .then(function() {
-          expect().fail();
-        })
-        .catch(function(err) {
-          expect().not.fail();
-        })
-        .then(done, done);
+      it('is rejected', function() {
+        return expect(migrationsSet.migrate()).to.reject();
       });
 
-      it('doesn\'t go over the failed migration', function(done) {
-        migrationsSet.migrate()
-        .then(function() {
-          expect().fail();
-        })
-        .catch(function(err) {
-          expect(flag).to.be('B');
-        })
-        .then(done, done);
+      it('doesn\'t go over the failed migration', function() {
+        return migrationsSet.migrate()
+          .catch(function(err) {
+            expect(flag).to.be('B');
+          });
       });
 
       context('when the version backend is given', function() {
-        it('saves the last resolved version as current', function(done) {
+        it('saves the last resolved version as current', function() {
           var versionBackend = new VersionBackend();
 
-          migrationsSet.migrate(versionBackend)
-          .then(function() {
-            expect().fail();
-          })
-          .catch(function() {
-            return versionBackend.getCurrent();
-          })
-          .then(function(savedVersion) {
-            var lastVersion = migrations[1].version;
-            expect(savedVersion).to.be(lastVersion);
-          })
-          .then(done, done);
+          return migrationsSet.migrate(versionBackend)
+            .catch(function() {
+              return versionBackend.getCurrent();
+            })
+            .then(function(currentVersion) {
+              var expectedVersion = migrations[1].version;
+              expect(currentVersion).to.be(expectedVersion);
+            });
         });
       });
     });
@@ -165,10 +134,7 @@ describe('MigrationsSet', function() {
   describe('#rollback', function() {
     it('returns a promise', function() {
       migrationsSet = new MigrationsSet([]);
-      var result = migrationsSet.rollback();
-
-      expect(result).to.be.ok();
-      expect(typeof result.then).to.be('function');
+      expect(migrationsSet.rollback()).to.be.a('promise');
     });
 
     context('when no migrations are given', function() {
@@ -176,15 +142,8 @@ describe('MigrationsSet', function() {
         migrationsSet = new MigrationsSet([]);
       });
 
-      it('is fulfilled', function(done) {
-        migrationsSet.rollback()
-        .then(function() {
-          expect().not.fail();
-        })
-        .catch(function() {
-          expect().fail();
-        })
-        .then(done, done);
+      it('is fulfilled', function() {
+        return expect(migrationsSet.rollback()).to.fulfill();
       });
     });
 
@@ -202,23 +161,15 @@ describe('MigrationsSet', function() {
         flag = 'initial';
       });
 
-      it('is fulfilled', function(done) {
-        migrationsSet.rollback()
-        .then(function() {
-          expect().not.fail();
-        })
-        .catch(function() {
-          expect().fail();
-        })
-        .then(done, done);
+      it('is fulfilled', function() {
+        return expect(migrationsSet.rollback()).to.fulfill();
       });
 
-      it('doesn\'t rollback any migration', function(done) {
-        migrationsSet.rollback()
-        .then(function() {
-          expect(flag).to.be('initial');
-        })
-        .then(done, done);
+      it('doesn\'t rollback any migration', function() {
+        return migrationsSet.rollback()
+          .then(function() {
+            expect(flag).to.be('initial');
+          });
       });
     });
 
@@ -237,12 +188,11 @@ describe('MigrationsSet', function() {
         flag = 'initial';
       });
 
-      it('reverts the current migration', function(done) {
-        migrationsSet.rollback()
-        .then(function() {
-          expect(flag).to.be('B');
-        })
-        .then(done, done);
+      it('reverts the current migration', function() {
+        return migrationsSet.rollback()
+          .then(function() {
+            expect(flag).to.be('B');
+          });
       });
     });
 
@@ -259,26 +209,15 @@ describe('MigrationsSet', function() {
         flag = 'initial';
       });
 
-      it('is rejected', function(done) {
-        migrationsSet.rollback()
-        .then(function() {
-          expect().fail();
-        })
-        .catch(function(err) {
-          expect().not.fail();
-        })
-        .then(done, done);
+      it('is rejected', function() {
+        return expect(migrationsSet.rollback()).to.reject();
       });
 
-      it('doesn\'t revert anything', function(done) {
-        migrationsSet.rollback()
-        .then(function() {
-          expect().fail();
-        })
-        .catch(function(err) {
-          expect(flag).to.be('initial');
-        })
-        .then(done, done);
+      it('doesn\'t revert anything', function() {
+        return migrationsSet.rollback()
+          .catch(function(err) {
+            expect(flag).to.be('initial');
+          });
       });
     });
 
@@ -296,15 +235,14 @@ describe('MigrationsSet', function() {
           migrationsSet = new MigrationsSet(migrations, curVersion);
         });
 
-        it('sets the current version to null', function(done) {
-          migrationsSet.rollback(versionBackend)
-          .then(function() {
-            return versionBackend.getCurrent();
-          })
-          .then(function(savedVersion) {
-            expect(savedVersion).to.be(null);
-          })
-          .then(done, done);
+        it('sets the current version to null', function() {
+          return migrationsSet.rollback(versionBackend)
+            .then(function() {
+              return versionBackend.getCurrent();
+            })
+            .then(function(currentVersion) {
+              expect(currentVersion).to.be(null);
+            });
         });
       });
 
@@ -314,16 +252,15 @@ describe('MigrationsSet', function() {
           migrationsSet = new MigrationsSet(migrations, curVersion);
         });
 
-        it('sets the current version to null', function(done) {
-          migrationsSet.rollback(versionBackend)
-          .then(function() {
-            return versionBackend.getCurrent();
-          })
-          .then(function(savedVersion) {
-            var expectedVersion = migrations[0].version;
-            expect(savedVersion).to.be(expectedVersion);
-          })
-          .then(done, done);
+        it('sets the current version to null', function() {
+          return migrationsSet.rollback(versionBackend)
+            .then(function() {
+              return versionBackend.getCurrent();
+            })
+            .then(function(currentVersion) {
+              var expectedVersion = migrations[0].version;
+              expect(currentVersion).to.be(expectedVersion);
+            });
         });
       });
     });
