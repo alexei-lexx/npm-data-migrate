@@ -62,11 +62,7 @@ shared.scenario('migration method', function(methodName) {
     });
 
     it('is rejected with the same reason', function() {
-      return expect(migration[methodName]()).to
-        .reject()
-        .then(function(reason) {
-          expect(reason).to.be('bad weather');
-        });
+      return expect(migration[methodName]()).to.reject('bad weather');
     });
   });
 

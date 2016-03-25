@@ -8,11 +8,7 @@ shared.scenario('any subcommand', function(subcommand) {
       var args = [ 'node', 'script', subcommand, '-d', './wrong_dir' ];
 
       it('is rejected', function() {
-        return expect(Cli.exec(args)).to
-          .reject()
-          .then(function(err) {
-            expect(err.message).contain('ENOENT, no such file or directory');
-          });
+        return expect(Cli.exec(args)).to.reject(/no such file or directory/);
       });
     });
 

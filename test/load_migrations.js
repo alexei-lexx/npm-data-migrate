@@ -8,11 +8,7 @@ describe('LoadMigrations', function() {
 
   context('when a non-existent dir is given', function() {
     it('is rejected', function() {
-      return expect(loadMigrations('./wrong-dir')).to
-        .reject()
-        .then(function(reason) {
-          expect(reason.code).to.be('ENOENT');
-        });
+      return expect(loadMigrations('./wrong-dir')).to.reject(/ENOENT/);
     });
   });
 
